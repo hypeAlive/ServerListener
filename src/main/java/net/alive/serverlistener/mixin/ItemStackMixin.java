@@ -24,7 +24,8 @@ public abstract class ItemStackMixin {
     @Shadow
     public abstract boolean isEmpty();
 
-    @Shadow public abstract void removeCustomName();
+    @Shadow
+    public abstract void removeCustomName();
 
     @Inject(method = "getTooltip", at = @At(value = "RETURN"), locals = LocalCapture.CAPTURE_FAILEXCEPTION)
     private void getToolTip(PlayerEntity player, TooltipContext context, CallbackInfoReturnable<List<Text>> callbackInfoReturnable, List<Text> list) {

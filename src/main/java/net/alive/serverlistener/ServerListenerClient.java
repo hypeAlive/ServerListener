@@ -80,10 +80,6 @@ public class ServerListenerClient implements ClientModInitializer {
              */
     }
 
-    private boolean isInventoryTitle(MinecraftClient client, String string) {
-        return client.currentScreen.getTitle().getString().equals(string);
-    }
-
     private void onAuctionHouseEnter(ScreenHandler handler){
         MinecraftClient.getInstance().player.sendMessage(getText("Auktionshaus betreten", Formatting.DARK_RED));
 
