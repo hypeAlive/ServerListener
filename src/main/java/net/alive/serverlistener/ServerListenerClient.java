@@ -1,5 +1,7 @@
 package net.alive.serverlistener;
 
+import net.alive.serverlistener.listener.AuctionListener;
+import net.alive.serverlistener.listener.InventoryListener;
 import net.alive.serverlistener.utils.ServerUtil;
 import net.alive.serverlistener.utils.StringUtil;
 import net.fabricmc.api.ClientModInitializer;
@@ -32,6 +34,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ServerListenerClient implements ClientModInitializer {
     private static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+    private static MinecraftClient client;
 
     private boolean inAuctionHouse = false;
 
@@ -42,16 +45,20 @@ public class ServerListenerClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
 
+        client = MinecraftClient.getInstance();
         ServerUtil.init();
+
+
+        InventoryListener auctionListener = new AuctionListener(new String[]{"Auktionshaus"}, 6*9);
 
 
         /**
          * Daten Auslesen aus Auktionshaus, /handel, Spielershops
          */
-
+            /*
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
-            if (!(client.currentScreen instanceof GenericContainerScreen && isInventoryTitle(client, "Auktionshaus"))) return;
+            if (!(client.currentScreen instanceof HandledScreen && isInventoryTitle(client, "Auktionshaus"))) return;
 
             ScreenHandler handler = client.player.currentScreenHandler;
 
@@ -69,6 +76,8 @@ public class ServerListenerClient implements ClientModInitializer {
                 client.player.sendMessage(StringUtil.getColorizedString("9-null-stack", Formatting.RED));
             }
         });
+
+             */
     }
 
     private boolean isInventoryTitle(MinecraftClient client, String string) {
