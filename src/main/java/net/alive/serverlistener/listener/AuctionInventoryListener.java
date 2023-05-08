@@ -1,6 +1,7 @@
 package net.alive.serverlistener.listener;
 
 import net.alive.serverlistener.PriceCxnItemStack;
+import net.alive.serverlistener.utils.ApiInteractionUtil;
 import net.alive.serverlistener.utils.StringUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.screen.ScreenHandler;
@@ -57,10 +58,7 @@ public class AuctionInventoryListener extends InventoryListener{
 
             client.player.sendMessage(StringUtil.getColorizedString(item.getStack().getName().getString(), Formatting.RED));
 
-            for(String tag : nbtTags){
-                client.player.sendMessage(StringUtil.getColorizedString(tag, Formatting.BLUE));
-                client.player.sendMessage(StringUtil.getColorizedString(" ", Formatting.AQUA));
-            }
+            ApiInteractionUtil.testData(client, nbtTags);
         }
     }
 

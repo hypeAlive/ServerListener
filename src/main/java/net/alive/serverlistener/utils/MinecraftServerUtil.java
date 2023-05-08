@@ -18,7 +18,7 @@ public class MinecraftServerUtil {
                     if(client.player == null) return;
                     MutableText text = StringUtil.getColorizedString("", Formatting.GRAY)
                             .append(ServerListenerClient.MOD_TEXT)
-                            .append(StringUtil.getColorizedString(" Mod aktiviert!", Formatting.GRAY));
+                            .append(StringUtil.getColorizedString(" Mod wurde aktiviert!", Formatting.GRAY));
                     client.player.sendMessage(text);
                 }
                 onServer = true;
