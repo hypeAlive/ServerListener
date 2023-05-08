@@ -12,10 +12,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Uuids;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class StringUtil {
 
@@ -28,11 +25,15 @@ public class StringUtil {
     }
 
     public static MutableText getColorizedString(List<Pair<String, Formatting>> parts) {
+
+        String first = parts.get(0).getFirst();
+
         MutableText msg = StringUtil.getColorizedString(parts.get(0).getFirst(), parts.get(0).getSecond());
 
-        parts.remove(0);
-
         for (Pair<String, Formatting> part : parts) {
+
+            if(Objects.equals(part.getFirst(), first)) continue;
+
             msg.append(StringUtil.getColorizedString(part.getFirst(), part.getSecond()));
         }
 

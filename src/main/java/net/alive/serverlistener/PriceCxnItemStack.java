@@ -23,8 +23,8 @@ public class PriceCxnItemStack {
     private long timeStamp;
     private String sellerName;
     private UUID sellerUuid;
-    private double buyPrice;
-    private double bidPrice;
+    private String buyPrice;
+    private String bidPrice;
     private String itemName;
     private int amount;
 
@@ -45,11 +45,9 @@ public class PriceCxnItemStack {
         this.sellerName = StringUtil.getFirstSuffixStartingWith(toolTips, SELLER_SEARCH);
         this.sellerUuid = this.sellerName == null ? null : StringUtil.getPlayerUUID(this.sellerName);
 
-        String bidPrice = StringUtil.getFirstSuffixStartingWith(toolTips, BID_SEARCH);
-        this.bidPrice = bidPrice == null ? -1 : Double.parseDouble(bidPrice);
+        this.bidPrice = StringUtil.getFirstSuffixStartingWith(toolTips, BID_SEARCH);
 
-        String buyPrice = StringUtil.getFirstSuffixStartingWith(toolTips, BUY_SEARCH);
-        this.buyPrice = buyPrice == null ? -1 : Double.parseDouble(buyPrice);
+        this.buyPrice = StringUtil.getFirstSuffixStartingWith(toolTips, BUY_SEARCH);
 
         String timestamp = StringUtil.getFirstSuffixStartingWith(toolTips, TIMESTAMP_SEARCH);
         this.timeStamp = timestamp == null ? -1 : TimeUtil.getStartTimeStamp(timestamp);

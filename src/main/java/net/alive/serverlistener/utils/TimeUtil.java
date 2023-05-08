@@ -6,10 +6,10 @@ public class TimeUtil {
         String[] parts = timerString.split(" ");
         int hours = 0;
         int minutes = 0;
-        if (parts.length >= 2) {
+        if (parts.length > 2) {
             hours = Integer.parseInt(parts[0]);
             minutes = Integer.parseInt(parts[2]);
-        } else if (parts.length == 1) {
+        } else {
             hours = Integer.parseInt(parts[0]);
         }
         long elapsedSeconds = hours * 3600L + minutes * 60L;

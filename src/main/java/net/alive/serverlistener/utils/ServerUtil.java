@@ -23,8 +23,10 @@ public class ServerUtil {
             if (client.getCurrentServerEntry() != null && client.getCurrentServerEntry().address.equals("cytooxien.de")) {
                 if(!onServer) {
                     if(client.player == null) return;
-                    client.player.sendMessage(ServerListenerClient.MOD_TEXT
-                            .append(StringUtil.getColorizedString(" Mod aktiviert!", Formatting.GRAY)));
+                    MutableText text = StringUtil.getColorizedString("", Formatting.GRAY)
+                            .append(ServerListenerClient.MOD_TEXT)
+                            .append(StringUtil.getColorizedString(" Mod aktiviert!", Formatting.GRAY));
+                    client.player.sendMessage(text);
                 }
                 onServer = true;
             } else {

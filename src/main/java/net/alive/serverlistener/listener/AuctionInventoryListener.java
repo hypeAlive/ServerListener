@@ -7,19 +7,23 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Formatting;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class AuctionListener extends InventoryListener{
+public class AuctionInventoryListener extends InventoryListener{
 
-    private List<PriceCxnItemStack> prices;
+    private final List<PriceCxnItemStack> prices = new ArrayList<>();
 
-    public AuctionListener(String[] inventoryTitles, int inventorySize) {
+    public AuctionInventoryListener(String[] inventoryTitles, int inventorySize) {
         super(inventoryTitles, inventorySize);
     }
 
     @Override
     public void onInventoryOpen(MinecraftClient client, ScreenHandler handler) {
         client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geöffnet!", Formatting.RED));
+
+        updatePrices(handler);
+
     }
 
     @Override
@@ -36,7 +40,7 @@ public class AuctionListener extends InventoryListener{
     }
 
     private void updatePrices(ScreenHandler handler){
-        for(int i = 10; i < 31; i++){
+        for(int i = 10; i < 35; i++){
             Slot slot = handler.getSlot(i);
             if(!slot.hasStack()) continue;
             prices.add(new PriceCxnItemStack(slot));
@@ -51,10 +55,11 @@ public class AuctionListener extends InventoryListener{
 
             if(nbtTags == null) continue;
 
-            client.player.sendMessage(StringUtil.getColorizedString(item.getStack().getName().getString(), Formatting.BLUE));
+            client.player.sendMessage(StringUtil.getColorizedString(item.getStack().getName().getString(), Formatting.RED));
 
             for(String tag : nbtTags){
                 client.player.sendMessage(StringUtil.getColorizedString(tag, Formatting.BLUE));
+                client.player.sendMessage(StringUtil.getColorizedString(" ", Formatting.AQUA));
             }
         }
     }

@@ -1,39 +1,22 @@
 package net.alive.serverlistener;
 
-import com.mojang.datafixers.util.Pair;
-import net.alive.serverlistener.listener.AuctionListener;
+import net.alive.serverlistener.listener.AuctionInventoryListener;
 import net.alive.serverlistener.listener.InventoryListener;
 import net.alive.serverlistener.utils.ServerUtil;
 import net.alive.serverlistener.utils.StringUtil;
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.ingame.GenericContainerScreen;
-import net.minecraft.client.gui.screen.ingame.HandledScreen;
-import net.minecraft.client.input.Input;
 import net.minecraft.client.item.TooltipContext;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
-import net.minecraft.network.packet.c2s.play.PlayerInteractItemC2SPacket;
-import net.minecraft.screen.MerchantScreenHandler;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.text.*;
-import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
-import org.lwjgl.glfw.GLFW;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class ServerListenerClient implements ClientModInitializer {
     private static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
@@ -58,7 +41,7 @@ public class ServerListenerClient implements ClientModInitializer {
         ServerUtil.init();
 
 
-        InventoryListener auctionListener = new AuctionListener(new String[]{"Auktionshaus"}, 6*9);
+        InventoryListener auctionListener = new AuctionInventoryListener(new String[]{"Auktionshaus"}, 6*9);
 
 
         /**
