@@ -2,7 +2,7 @@ package net.alive.serverlistener;
 
 import net.alive.serverlistener.listener.AuctionInventoryListener;
 import net.alive.serverlistener.listener.InventoryListener;
-import net.alive.serverlistener.utils.ServerUtil;
+import net.alive.serverlistener.utils.MinecraftServerUtil;
 import net.alive.serverlistener.utils.StringUtil;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.MinecraftClient;
@@ -38,7 +38,7 @@ public class ServerListenerClient implements ClientModInitializer {
     public void onInitializeClient() {
 
         client = MinecraftClient.getInstance();
-        ServerUtil.init();
+        MinecraftServerUtil.init();
 
 
         InventoryListener auctionListener = new AuctionInventoryListener(new String[]{"Auktionshaus"}, 6*9);

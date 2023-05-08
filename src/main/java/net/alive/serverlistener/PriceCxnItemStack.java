@@ -61,4 +61,8 @@ public class PriceCxnItemStack {
     public ItemStack getStack() {
         return stack;
     }
+
+    private String getName(ItemStack item){
+        return "";
+    }
 }
