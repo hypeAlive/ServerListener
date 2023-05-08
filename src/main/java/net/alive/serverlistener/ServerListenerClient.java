@@ -1,5 +1,6 @@
 package net.alive.serverlistener;
 
+import com.mojang.datafixers.util.Pair;
 import net.alive.serverlistener.listener.AuctionListener;
 import net.alive.serverlistener.listener.InventoryListener;
 import net.alive.serverlistener.utils.ServerUtil;
@@ -27,6 +28,8 @@ import net.minecraft.util.ClickType;
 import net.minecraft.util.Formatting;
 import org.lwjgl.glfw.GLFW;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -35,6 +38,12 @@ import java.util.concurrent.TimeUnit;
 public class ServerListenerClient implements ClientModInitializer {
     private static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
     private static MinecraftClient client;
+
+    public static final MutableText MOD_TEXT = StringUtil.getColorizedString(Arrays.asList(
+            StringUtil.TextComponent("[", Formatting.DARK_GRAY),
+            StringUtil.TextComponent("PreisCXN", Formatting.GOLD),
+            StringUtil.TextComponent("]", Formatting.DARK_GRAY))
+    );
 
     private boolean inAuctionHouse = false;
 

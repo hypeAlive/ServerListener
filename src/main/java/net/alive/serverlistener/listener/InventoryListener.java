@@ -34,17 +34,18 @@ public abstract class InventoryListener {
             if (client.player == null) return;
 
             if(!this.open && client.currentScreen instanceof HandledScreen && isInventoryTitle(client, inventoryTitles)){
-                onInventoryOpen(client);
-                initSlots(client);
+                ScreenHandler handler = client.player.currentScreenHandler;
+                onInventoryOpen(client, handler);
+                initSlots(client, handler);
                 this.open = true;
             }
 
-            if(hadItemsChange(client))
-                onInventoryUpdate(client);
+            if(hadItemsChange(client, client.player.currentScreenHandler)) {
+                onInventoryUpdate(client, client.player.currentScreenHandler);
+            }
 
             if(this.open && !(client.currentScreen instanceof HandledScreen)) {
-
-                onInventoryClose(client);
+                onInventoryClose(client, client.player.currentScreenHandler);
                 this.open = false;
             }
 
@@ -52,11 +53,11 @@ public abstract class InventoryListener {
         });
     }
 
-    public abstract void onInventoryOpen(MinecraftClient client);
+    public abstract void onInventoryOpen(MinecraftClient client, ScreenHandler handler);
 
-    public abstract void onInventoryClose(MinecraftClient client);
+    public abstract void onInventoryClose(MinecraftClient client, ScreenHandler handler);
 
-    public abstract void onInventoryUpdate(MinecraftClient client);
+    public abstract void onInventoryUpdate(MinecraftClient client, ScreenHandler handler);
 
     private boolean isInventoryTitle(MinecraftClient client, String[] inventoryTitles){
         if(client.currentScreen == null) return false;
@@ -69,18 +70,16 @@ public abstract class InventoryListener {
         return false;
     }
 
-    private boolean hadItemsChange(MinecraftClient client){
+    private boolean hadItemsChange(MinecraftClient client, ScreenHandler handler){
 
         if(!isInventoryTitle(client, inventoryTitles)) return false;
-
-        ScreenHandler handler = client.player.currentScreenHandler;
-
+        if(client.player == null) return false;
         if(handler == null) return false;
         if(this.slots == null) return false;
 
         for (int i = 0; i < this.inventorySize; i++){
             if(!Objects.equals(slots.get(i).getStack().getName().toString(), handler.getSlot(i).getStack().getName().toString())){
-                initSlots(client);
+                initSlots(client, handler);
                 return true;
             }
         }
@@ -88,8 +87,7 @@ public abstract class InventoryListener {
         return false;
     }
 
-    private void initSlots(MinecraftClient client){
-        ScreenHandler handler = client.player.currentScreenHandler;
+    private void initSlots(MinecraftClient client, ScreenHandler handler){
 
         if(handler == null) return;
 

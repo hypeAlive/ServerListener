@@ -1,5 +1,6 @@
 package net.alive.serverlistener.utils;
 
+import net.alive.serverlistener.ServerListenerClient;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.text.MutableText;
@@ -20,9 +21,19 @@ public class ServerUtil {
     public static void init() {
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             if (client.getCurrentServerEntry() != null && client.getCurrentServerEntry().address.equals("cytooxien.de")) {
+                if(!onServer) {
+                    if(client.player == null) return;
+                    client.player.sendMessage(ServerListenerClient.MOD_TEXT
+                            .append(StringUtil.getColorizedString(" Mod aktiviert!", Formatting.GRAY)));
+                }
                 onServer = true;
+            } else {
+                onServer = false;
             }
         });
+        ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
+            onServer = false;
+        }));
     }
 
 
