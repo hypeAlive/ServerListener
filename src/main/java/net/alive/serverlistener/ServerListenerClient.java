@@ -39,8 +39,8 @@ public class ServerListenerClient implements ClientModInitializer {
     public void onInitializeClient() {
 
         client = MinecraftClient.getInstance();
-        MinecraftServerUtil.init();
 
+        MinecraftServerUtil.init();
 
         InventoryListener auctionListener = new AuctionInventoryListener(new String[]{"Auktionshaus"}, 6*9);
 

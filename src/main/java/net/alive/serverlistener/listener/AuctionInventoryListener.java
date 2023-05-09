@@ -38,6 +38,9 @@ public class AuctionInventoryListener extends InventoryListener{
     @Override
     public void onInventoryUpdate(MinecraftClient client, ScreenHandler handler) {
         client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " updated!", Formatting.RED));
+
+        updatePrices(handler);
+
     }
 
     private void updatePrices(ScreenHandler handler){
@@ -56,9 +59,9 @@ public class AuctionInventoryListener extends InventoryListener{
 
             if(nbtTags == null) continue;
 
-            client.player.sendMessage(StringUtil.getColorizedString(item.getStack().getName().getString(), Formatting.RED));
+            item.printDisplay(client);
 
-            ApiInteractionUtil.testData(client, nbtTags);
+            //ApiInteractionUtil.testData(client, nbtTags, item.getStack());
         }
     }
 

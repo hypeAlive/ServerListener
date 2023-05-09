@@ -91,4 +91,23 @@ public class StringUtil {
         return Uuids.getOfflinePlayerUuid(playerName);
     }
 
+    public static String extractStringFromWildcard(String input, String wildcardPattern) {
+        String[] patternParts = wildcardPattern.split("\\*");
+        if (patternParts.length == 2) {
+            int startIndex = input.indexOf(patternParts[0]);
+            if (startIndex != -1) {
+                int endIndex = input.indexOf(patternParts[1], startIndex + patternParts[0].length());
+                if (endIndex != -1) {
+                    return input.substring(startIndex + patternParts[0].length(), endIndex);
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
+
 }
