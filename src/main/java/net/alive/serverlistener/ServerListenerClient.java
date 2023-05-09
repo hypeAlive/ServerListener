@@ -20,7 +20,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public class ServerListenerClient implements ClientModInitializer {
-    private static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
+    public static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
     private static MinecraftClient client;
 
     public static final MutableText MOD_TEXT = StringUtil.getColorizedString(Arrays.asList(
@@ -43,7 +43,6 @@ public class ServerListenerClient implements ClientModInitializer {
 
 
         InventoryListener auctionListener = new AuctionInventoryListener(new String[]{"Auktionshaus"}, 6*9);
-        TabListener tabListener = new TabListener();
 
 
         /**
