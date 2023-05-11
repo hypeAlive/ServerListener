@@ -3,6 +3,8 @@ package net.alive.serverlistener.utils;
 public class TimeUtil {
 
     public static long getStartTimeStamp(String timerString) {
+        if(timerString.equals("Jetzt"))
+            return -1;
         String[] parts = timerString.split(" ");
         int hours = 0;
         int minutes = 0;
