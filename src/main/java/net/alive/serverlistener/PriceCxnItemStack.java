@@ -1,6 +1,7 @@
 package net.alive.serverlistener;
 
 import com.google.gson.Gson;
+import com.mojang.authlib.minecraft.client.ObjectMapper;
 import net.alive.serverlistener.utils.StringUtil;
 import net.alive.serverlistener.utils.TimeUtil;
 import net.minecraft.client.MinecraftClient;
@@ -24,21 +25,21 @@ public class PriceCxnItemStack {
     private static final String BID_SEARCH = "Gebotsbetrag: ";
     private static final String BUY_SEARCH = "Sofortkauf: ";
 
-    private long timeStamp;
-    private String sellerName;
-    private UUID sellerUuid;
-    private String buyPrice;
-    private String bidPrice;
-    private String itemName;
-    private int amount;
+    private long timeStamp = -1;
+    private String sellerName = null;
+    private UUID sellerUuid = null;
+    private String buyPrice = null;
+    private String bidPrice = null;
+    private String itemName = null;
+    private int amount = -1;
 
-    private String comment;
+    private String comment = null;
 
-    private String priceKey;
+    private String priceKey = null;
 
-    private ItemStack stack;
+    private ItemStack stack = null;
 
-    private List<String> toolTips;
+    private List<String> toolTips = null;
 
     public PriceCxnItemStack(ItemStack stack){
         if(stack == null) return;
@@ -157,8 +158,55 @@ public class PriceCxnItemStack {
         return priceKey;
     }
 
-    public String toJson() {
-        Gson gson = new Gson();
-        return gson.toJson(this);
+    @Override
+    public String toString(){
+        StringBuilder sb = new StringBuilder();
+        sb.append("{");
+        sb.append("\"itemName\": \"").append(this.itemName).append("\", ");
+        sb.append("\"amount\": \"").append(this.amount).append("\", ");
+        sb.append("\"timestamp\": \"").append(this.timeStamp).append("\", ");
+        sb.append("\"sellerUUID\": \"").append(this.sellerUuid).append("\", ");
+        sb.append("\"buyPrice\": \"").append(this.buyPrice).append("\", ");
+        sb.append("\"bidPrice\": \"").append(this.bidPrice).append("\", ");
+        sb.append("\"comment\": \"").append(this.comment).append("\", ");
+        sb.append("\"timestamp\": \"").append(this.timeStamp).append("\"");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public String getSellerName() {
+        return sellerName;
+    }
+
+    public UUID getSellerUuid() {
+        return sellerUuid;
+    }
+
+    public String getBuyPrice() {
+        return buyPrice;
+    }
+
+    public String getBidPrice() {
+        return bidPrice;
+    }
+
+    public String getItemName() {
+        return itemName;
+    }
+
+    public int getAmount() {
+        return amount;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public List<String> getToolTips() {
+        return toolTips;
     }
 }
