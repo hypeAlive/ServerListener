@@ -1,5 +1,6 @@
 package net.alive.serverlistener;
 
+import com.mojang.authlib.minecraft.MinecraftSessionService;
 import net.alive.serverlistener.listener.AuctionInventoryListener;
 import net.alive.serverlistener.listener.InventoryListener;
 import net.alive.serverlistener.listener.TabListener;
