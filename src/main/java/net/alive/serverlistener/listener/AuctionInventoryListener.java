@@ -53,6 +53,7 @@ public class AuctionInventoryListener extends InventoryListener{
     private void updatePrices(ScreenHandler handler){
         for(int i = 10; i < 35; i++){
             Slot slot = handler.getSlot(i);
+            if(slot.getStack() == null) continue;
             if(!slot.hasStack()) continue;
 
             MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString(String.valueOf(i), Formatting.RED));
@@ -87,7 +88,6 @@ public class AuctionInventoryListener extends InventoryListener{
             //ApiInteractionUtil.testData(client, nbtTags, item.getStack());
 
             data.add(item.toString());
-
         }
 
         ApiInteractionUtil.sendData(data);

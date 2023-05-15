@@ -17,6 +17,9 @@ public class ApiInteractionUtil {
     public static void sendData(List<String> data){
         try {
 
+            data.set(0, "[" + data.get(0));
+            data.set(data.size()-1, data.get(data.size()-1) + "]");
+
             Gson gson = new Gson();
             String json = gson.toJson(data);
 

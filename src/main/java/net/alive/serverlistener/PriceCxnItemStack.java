@@ -2,6 +2,8 @@ package net.alive.serverlistener;
 
 import com.google.gson.Gson;
 import com.mojang.authlib.minecraft.client.ObjectMapper;
+import net.alive.serverlistener.utils.MinecraftServerUtil;
+import net.alive.serverlistener.utils.Modes;
 import net.alive.serverlistener.utils.StringUtil;
 import net.alive.serverlistener.utils.TimeUtil;
 import net.minecraft.client.MinecraftClient;
@@ -32,6 +34,7 @@ public class PriceCxnItemStack {
     private String bidPrice = null;
     private String itemName = null;
     private int amount = -1;
+    private Modes mode;
 
     private String comment = null;
 
@@ -64,6 +67,8 @@ public class PriceCxnItemStack {
         this.priceKey = createID();
 
         this.comment = Objects.requireNonNull(StringUtil.getNbtTags(stack)).toString();
+
+        this.mode = MinecraftServerUtil.MODE;
     }
 
     public PriceCxnItemStack(Slot slot){
@@ -160,18 +165,18 @@ public class PriceCxnItemStack {
 
     @Override
     public String toString(){
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"itemName\": \"").append(this.itemName).append("\", ");
-        sb.append("\"amount\": \"").append(this.amount).append("\", ");
-        sb.append("\"timestamp\": \"").append(this.timeStamp).append("\", ");
-        sb.append("\"sellerUUID\": \"").append(this.sellerUuid).append("\", ");
-        sb.append("\"buyPrice\": \"").append(this.buyPrice).append("\", ");
-        sb.append("\"bidPrice\": \"").append(this.bidPrice).append("\", ");
-        sb.append("\"comment\": \"").append(this.comment).append("\", ");
-        sb.append("\"timestamp\": \"").append(this.timeStamp).append("\"");
-        sb.append("}");
-        return sb.toString();
+        String sb = "";
+        sb += "{";
+        sb += "\"mode\": \"" + this.mode.toString() + "\", ";
+        sb += "\"itemName\": \"" + this.itemName + "\", ";
+        sb += "\"amount\": \"" + this.amount + "\", ";
+        sb += "\"timestamp\": \"" + this.timeStamp + "\", ";
+        sb += "\"sellerUUID\": \"" + this.sellerUuid + "\", ";
+        sb += "\"buyPrice\": \"" + this.buyPrice + "\", ";
+        sb += "\"bidPrice\": \"" + this.bidPrice + "\", ";
+        sb += "\"comment\": \"" + this.comment.replaceAll("\"", ";") + "\"";
+        sb += "}";
+        return sb;
     }
 
     public long getTimeStamp() {
