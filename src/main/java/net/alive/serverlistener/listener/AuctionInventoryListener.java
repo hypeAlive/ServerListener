@@ -5,6 +5,7 @@ import com.mojang.authlib.minecraft.client.ObjectMapper;
 import net.alive.serverlistener.PriceCxnItemStack;
 import net.alive.serverlistener.ServerListenerClient;
 import net.alive.serverlistener.utils.ApiInteractionUtil;
+import net.alive.serverlistener.utils.MinecraftServerUtil;
 import net.alive.serverlistener.utils.StringUtil;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.screen.ScreenHandler;
@@ -17,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AuctionInventoryListener extends InventoryListener{
 
-    private final List<PriceCxnItemStack> prices = new ArrayList<>();
+    private List<PriceCxnItemStack> prices = new ArrayList<>();
 
     public AuctionInventoryListener(String[] inventoryTitles, int inventorySize) {
         super(inventoryTitles, inventorySize);
@@ -25,7 +26,9 @@ public class AuctionInventoryListener extends InventoryListener{
 
     @Override
     public void onInventoryOpen(MinecraftClient client, ScreenHandler handler) {
-        client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geöffnet!", Formatting.RED));
+        client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geöffnet!", Formatting.GRAY));
+
+        prices = new ArrayList<>();
 
         updatePrices(handler);
 
@@ -33,7 +36,8 @@ public class AuctionInventoryListener extends InventoryListener{
 
     @Override
     public void onInventoryClose(MinecraftClient client, ScreenHandler handler) {
-        client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geschlossen!", Formatting.RED));
+        MinecraftServerUtil.refreshMode();
+        client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geschlossen!", Formatting.GRAY));
 
         processPrices(client);
 
@@ -41,34 +45,39 @@ public class AuctionInventoryListener extends InventoryListener{
 
     @Override
     public void onInventoryUpdate(MinecraftClient client, ScreenHandler handler) {
-        for(int i = 0; i < 3; i++) {
-            client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " updated!", Formatting.RED));
-
+        for(int i = 0; i < 7; i++) {
             ServerListenerClient.EXECUTOR_SERVICE.schedule(() -> {
+                if(!this.isOpen) return;
                 updatePrices(handler);
-            }, 30 + 10 * i, TimeUnit.MILLISECONDS);
+            }, 300 + 100 * i, TimeUnit.MILLISECONDS);
         }
     }
 
     private void updatePrices(ScreenHandler handler){
+        int size = prices.size();
         for(int i = 10; i < 35; i++){
             Slot slot = handler.getSlot(i);
             if(slot.getStack() == null) continue;
             if(!slot.hasStack()) continue;
 
-            MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString(String.valueOf(i), Formatting.RED));
+            //MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString(String.valueOf(i), Formatting.RED));
 
             boolean add = true;
 
             PriceCxnItemStack item = new PriceCxnItemStack(slot);
             for(PriceCxnItemStack items : prices){
-                if(items.getPriceKey().equals(item.getPriceKey()))
+                if(items.getPriceKey().equals(item.getPriceKey())){
+                    //MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString("- " + prices.size(), Formatting.GREEN));
                     add = false;
+                }
             }
 
-            if(add)
-                prices.add(new PriceCxnItemStack(slot));
+            if(!add)
+                continue;
+
+            prices.add(new PriceCxnItemStack(slot));
         }
+        MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString("Added " + (prices.size() - size) + " Items to List (" + prices.size()  +")", Formatting.GRAY));
     }
 
     private void processPrices(MinecraftClient client){
@@ -76,16 +85,13 @@ public class AuctionInventoryListener extends InventoryListener{
 
         List<String> data = new ArrayList<>();
 
-        MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString(String.valueOf(this.prices.size()), Formatting.GREEN));
+        MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString(String.valueOf("Send " + this.prices.size() + " Items to Server"), Formatting.GREEN));
 
         for(PriceCxnItemStack item : prices){
             List<String> nbtTags = StringUtil.getNbtTags(item.getStack());
 
             if(nbtTags == null) continue;
-
-            //item.printDisplay(client);
-
-            //ApiInteractionUtil.testData(client, nbtTags, item.getStack());
+            if(item.toString() == null) continue;
 
             data.add(item.toString());
         }

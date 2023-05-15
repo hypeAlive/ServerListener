@@ -1,12 +1,10 @@
 package net.alive.serverlistener.listener;
 
-import net.alive.serverlistener.utils.StringUtil;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.slot.Slot;
-import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +15,10 @@ public abstract class InventoryListener {
     protected String[] inventoryTitles;
     private int inventorySize;
 
+
     private List<Slot> slots = new ArrayList<>();
 
-    private boolean open = false;
+    protected boolean isOpen = false;
 
     public InventoryListener(String[] inventoryTitles, int inventorySize){
 
@@ -33,20 +32,20 @@ public abstract class InventoryListener {
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null) return;
 
-            if(!this.open && client.currentScreen instanceof HandledScreen && isInventoryTitle(client, inventoryTitles)){
+            if(!this.isOpen && client.currentScreen instanceof HandledScreen && isInventoryTitle(client, inventoryTitles)){
                 ScreenHandler handler = client.player.currentScreenHandler;
                 onInventoryOpen(client, handler);
                 initSlots(client, handler);
-                this.open = true;
+                this.isOpen = true;
             }
 
             if(hadItemsChange(client, client.player.currentScreenHandler)) {
                 onInventoryUpdate(client, client.player.currentScreenHandler);
             }
 
-            if(this.open && !(client.currentScreen instanceof HandledScreen)) {
+            if(this.isOpen && !(client.currentScreen instanceof HandledScreen)) {
                 onInventoryClose(client, client.player.currentScreenHandler);
-                this.open = false;
+                this.isOpen = false;
             }
 
 

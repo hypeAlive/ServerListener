@@ -38,33 +38,37 @@ public class MinecraftServerUtil {
 
 
             ServerListenerClient.EXECUTOR_SERVICE.schedule(() -> {
-                InGameHud gameHud = MinecraftClient.getInstance().inGameHud;
-                PlayerListHud playerListHud = gameHud.getPlayerListHud();
-                try {
-                    for (Field field : playerListHud.getClass().getDeclaredFields()) {
-                        field.setAccessible(true); // You might want to set modifier to public first.
-                        Object value = field.get(playerListHud);
-                        if (value != null) {
-                            if(value.toString().contains("Du befindest dich auf ")){
-                                if(value.toString().contains(Modes.CITYBUILD.toString()))
-                                    MODE = Modes.CITYBUILD;
-                                else if(value.toString().contains(Modes.SKYBLOCK.toString()))
-                                    MODE = Modes.SKYBLOCK;
-                                else if(value.toString().contains(Modes.LOBBY.toString()))
-                                    MODE = Modes.LOBBY;
-                                MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString(MODE.toString(), Formatting.GREEN));
-                            }
-                        }
-                    }
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                }
-            }, 0, TimeUnit.SECONDS);
+                refreshMode();
+            }, 2, TimeUnit.SECONDS);
 
         });
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> {
             onServer = false;
         }));
+    }
+
+    public static void refreshMode(){
+        InGameHud gameHud = MinecraftClient.getInstance().inGameHud;
+        PlayerListHud playerListHud = gameHud.getPlayerListHud();
+        try {
+            for (Field field : playerListHud.getClass().getDeclaredFields()) {
+                field.setAccessible(true); // You might want to set modifier to public first.
+                Object value = field.get(playerListHud);
+                if (value != null) {
+                    if(value.toString().contains("Du befindest dich auf ")){
+                        if(value.toString().contains(Modes.CITYBUILD.toString()))
+                            MODE = Modes.CITYBUILD;
+                        else if(value.toString().contains(Modes.SKYBLOCK.toString()))
+                            MODE = Modes.SKYBLOCK;
+                        else if(value.toString().contains(Modes.LOBBY.toString()))
+                            MODE = Modes.LOBBY;
+                    }
+                }
+            }
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString("JOINED NEW MODE: " + MODE.toString(), Formatting.RED));
     }
 
 

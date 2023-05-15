@@ -62,13 +62,11 @@ public class PriceCxnItemStack {
         String timestamp = StringUtil.getFirstSuffixStartingWith(toolTips, TIMESTAMP_SEARCH);
         this.timeStamp = timestamp == null ? -1 : TimeUtil.getStartTimeStamp(timestamp);
 
-        this.itemName = stack.getItem().getName().getString();
+        this.itemName = stack.getItem().getTranslationKey();
 
         this.priceKey = createID();
 
         this.comment = Objects.requireNonNull(StringUtil.getNbtTags(stack)).toString();
-
-        this.mode = MinecraftServerUtil.MODE;
     }
 
     public PriceCxnItemStack(Slot slot){
@@ -165,15 +163,20 @@ public class PriceCxnItemStack {
 
     @Override
     public String toString(){
+        if(MinecraftServerUtil.MODE == Modes.NOTHING || MinecraftServerUtil.MODE == Modes.LOBBY)
+            return null;
+
+
         String sb = "";
         sb += "{";
-        sb += "\"mode\": \"" + this.mode.toString() + "\", ";
+        sb += "\"mode\": \"" + MinecraftServerUtil.MODE.getTranslationKey() + "\", ";
         sb += "\"itemName\": \"" + this.itemName + "\", ";
         sb += "\"amount\": \"" + this.amount + "\", ";
         sb += "\"timestamp\": \"" + this.timeStamp + "\", ";
         sb += "\"sellerUUID\": \"" + this.sellerUuid + "\", ";
         sb += "\"buyPrice\": \"" + this.buyPrice + "\", ";
         sb += "\"bidPrice\": \"" + this.bidPrice + "\", ";
+        sb += "\"priceKey\": \"" + this.priceKey + "\", ";
         sb += "\"comment\": \"" + this.comment.replaceAll("\"", ";") + "\"";
         sb += "}";
         return sb;
