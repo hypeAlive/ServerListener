@@ -28,7 +28,6 @@ public class PriceCxnItemStack {
     private static final String BUY_SEARCH = "Sofortkauf: ";
 
     private long timeStamp = -1;
-    private long minusTimeStamp;
     private String sellerName = null;
     private UUID sellerUuid = null;
     private String buyPrice = null;
@@ -63,9 +62,6 @@ public class PriceCxnItemStack {
         String timestamp = StringUtil.getFirstSuffixStartingWith(toolTips, TIMESTAMP_SEARCH);
         this.timeStamp = timestamp == null ? -1 : TimeUtil.getStartTimeStamp(timestamp);
         System.out.println("-.-" + timeStamp);
-
-        this.minusTimeStamp = timestamp == null ? -1 : (TimeUtil.getMinutes(timestamp) % 10);
-        System.out.println("-.-" + minusTimeStamp);
 
         this.itemName = stack.getItem().getTranslationKey();
 
@@ -144,7 +140,7 @@ public class PriceCxnItemStack {
      */
 
     private String createID(){
-        String id = this.itemName + "::" + this.buyPrice + "::" + (this.timeStamp - this.minusTimeStamp * 60 * 1000) + "::" + this.sellerUuid;
+        String id = this.itemName + "::" + this.buyPrice + "::" + TimeUtil.roundToTenMinutes(this.timeStamp) + "::" + this.sellerUuid;
         System.out.println(id);
         return id;
     }
