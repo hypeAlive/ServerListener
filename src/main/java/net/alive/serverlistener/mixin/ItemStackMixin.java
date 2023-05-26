@@ -72,7 +72,7 @@ public abstract class ItemStackMixin {
         list.add(StringUtil.getColorizedString("--- ", Formatting.DARK_GRAY)
                 .append(ServerListenerClient.MOD_TEXT)
                 .append(StringUtil.getColorizedString(" ---", Formatting.DARK_GRAY)));
-        list.add(StringUtil.getColorizedString("Preis: " + mode.toString(), Formatting.GRAY));
+        list.add(StringUtil.getColorizedString("Preis: " + mode.toString() + mode.getCurrency(), Formatting.GRAY));
 
         list.add(MutableText.of(new LiteralTextContent(" ")));
 

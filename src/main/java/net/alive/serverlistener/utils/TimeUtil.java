@@ -1,22 +1,44 @@
 package net.alive.serverlistener.utils;
 
+import java.util.TimeZone;
+
 public class TimeUtil {
 
-    public static long getStartTimeStamp(String timerString) {
+    public static int getMinutes(String timerString){
         if(timerString.equals("Jetzt"))
             return -1;
+
         String[] parts = timerString.split(" ");
-        int hours = 0;
-        int minutes = 0;
         if (parts.length > 2) {
-            hours = Integer.parseInt(parts[0]);
-            minutes = Integer.parseInt(parts[2]);
-        } else {
-            hours = Integer.parseInt(parts[0]);
+            return Integer.parseInt(parts[2]);
         }
-        long elapsedSeconds = hours * 3600L + minutes * 60L;
-        long startTimeStamp = System.currentTimeMillis() - elapsedSeconds * 1000;
-        startTimeStamp = (startTimeStamp / (24 * 3600 * 1000)) * (24 * 3600 * 1000);
+
+        return 0;
+    }
+
+    public static int getHours(String timerString){
+        if(timerString.equals("Jetzt"))
+            return -1;
+
+        String[] parts = timerString.split(" ");
+
+        return Integer.parseInt(parts[0]);
+    }
+
+    public static long getStartTimeStamp(String timerString) {
+        int hours = getHours(timerString);
+        int minutes = getMinutes(timerString);
+
+        if(hours == -1 || minutes == -1)
+            return -1;
+
+        long elapsedSeconds = (hours * 3600L + minutes * 60L) * 1000;
+        long day = 86400000;
+        elapsedSeconds = day - elapsedSeconds;
+        long startTimeStamp = System.currentTimeMillis() - elapsedSeconds;
+
+        startTimeStamp = (startTimeStamp / (60 * 1000)) * (60 * 1000);
+
         return startTimeStamp;
     }
 

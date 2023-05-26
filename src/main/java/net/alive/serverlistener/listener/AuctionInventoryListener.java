@@ -14,6 +14,7 @@ import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 public class AuctionInventoryListener extends InventoryListener{
@@ -67,6 +68,8 @@ public class AuctionInventoryListener extends InventoryListener{
             PriceCxnItemStack item = new PriceCxnItemStack(slot);
             for(PriceCxnItemStack items : prices){
                 if(items.getPriceKey().equals(item.getPriceKey())){
+                    if(!Objects.equals(items.getBidPrice(), item.getBidPrice()))
+                        items.setBidPrice(item.getBidPrice());
                     //MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString("- " + prices.size(), Formatting.GREEN));
                     add = false;
                 }

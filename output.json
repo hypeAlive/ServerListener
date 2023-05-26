@@ -1,0 +1,14 @@
+{
+  "mode": "cxnprice.mode.skyblock",
+  "itemName": "item.minecraft.stick",
+  "amount": "20",
+  "timestamp": "1684972800000",
+  "sellerUUID": "ac7a5463-9f43-3a2d-a07c-d208ebf6f495",
+  "buyPrice": "15,00",
+  "bidPrice": "1,00",
+  "priceKey": "item.minecraft.stick::15,00::1684972800000::ac7a5463-9f43-3a2d-a07c-d208ebf6f495",
+  "comment": {
+    "HideFlags": "2",
+    "display": "{Lore:[{\"italic\":false,\"text\":\"\"},{\"italic\":false,\"color\":\"gray\",\"extra\":[{\"color\":\"#448E00\",\"text\":\"MABUN\"}],\"text\":\"Verkäufer: \"},{\"italic\":false,\"text\":\"\"},{\"italic\":false,\"extra\":[{\"color\":\"gray\",\"text\":\"Sofortkauf: \"},{\"color\":\"gold\",\"extra\":[{\"color\":\"white\",\"text\":\"\"}],\"text\":\"15,00\"}],\"text\":\"\"},{\"italic\":false,\"extra\":[{\"color\":\"gray\",\"text\":\"Gebotsbetrag: \"},{\"color\":\"gold\",\"extra\":[{\"color\":\"white\",\"text\":\"\"}],\"text\":\"1,00\"}],\"text\":\"\"},{\"italic\":false,\"color\":\"gray\",\"extra\":[{\"color\":\"#9097A0\",\"text\":\"wyatt1611\"}],\"text\":\"Höchstbietender: \"},{\"italic\":false,\"text\":\"\"},{\"italic\":false,\"extra\":[{\"color\":\"gray\",\"text\":\"Ende: \"},{\"color\":\"gold\",\"text\":\"17 Stunden\"}],\"text\":\"\"}]}]}"
+  }
+}

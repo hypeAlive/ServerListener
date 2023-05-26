@@ -28,6 +28,7 @@ public class PriceCxnItemStack {
     private static final String BUY_SEARCH = "Sofortkauf: ";
 
     private long timeStamp = -1;
+    private long minusTimeStamp;
     private String sellerName = null;
     private UUID sellerUuid = null;
     private String buyPrice = null;
@@ -61,6 +62,10 @@ public class PriceCxnItemStack {
 
         String timestamp = StringUtil.getFirstSuffixStartingWith(toolTips, TIMESTAMP_SEARCH);
         this.timeStamp = timestamp == null ? -1 : TimeUtil.getStartTimeStamp(timestamp);
+        System.out.println("-.-" + timeStamp);
+
+        this.minusTimeStamp = timestamp == null ? -1 : (TimeUtil.getMinutes(timestamp) % 10);
+        System.out.println("-.-" + minusTimeStamp);
 
         this.itemName = stack.getItem().getTranslationKey();
 
@@ -139,7 +144,9 @@ public class PriceCxnItemStack {
      */
 
     private String createID(){
-        return this.itemName + "::" + this.bidPrice + this.buyPrice + "::" + this.timeStamp + "::" + this.sellerUuid;
+        String id = this.itemName + "::" + this.buyPrice + "::" + (this.timeStamp - this.minusTimeStamp * 60 * 1000) + "::" + this.sellerUuid;
+        System.out.println(id);
+        return id;
     }
 
     public void printDisplay(MinecraftClient client){
@@ -177,8 +184,12 @@ public class PriceCxnItemStack {
         sb += "\"buyPrice\": \"" + this.buyPrice + "\", ";
         sb += "\"bidPrice\": \"" + this.bidPrice + "\", ";
         sb += "\"priceKey\": \"" + this.priceKey + "\", ";
-        sb += "\"comment\": \"" + this.comment.replaceAll("\"", ";") + "\"";
+        sb += "\"comment\": " + StringUtil.convertToJsonObject(this.comment) + "";
         sb += "}";
+
+        sb.replace("\\\"", "");
+        System.out.println(sb);
+
         return sb;
     }
 
@@ -200,6 +211,10 @@ public class PriceCxnItemStack {
 
     public String getBidPrice() {
         return bidPrice;
+    }
+
+    public void setBidPrice(String price){
+        this.bidPrice = price;
     }
 
     public String getItemName() {

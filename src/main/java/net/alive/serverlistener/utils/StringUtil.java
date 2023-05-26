@@ -1,5 +1,7 @@
 package net.alive.serverlistener.utils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
@@ -13,8 +15,13 @@ import net.minecraft.util.Formatting;
 import net.minecraft.util.Uuids;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtil {
+
+    private static final String REGEX = "(\\w+):\\s?(.+?)(?=,\\s?\\w+:|$)";
+    private static final Pattern PATTERN = Pattern.compile(REGEX);
 
     public static MutableText getColorizedString(String string, Formatting formatting){
         return MutableText.of(new LiteralTextContent(string)).setStyle(Style.EMPTY.withColor(formatting));
@@ -108,6 +115,66 @@ public class StringUtil {
         } else {
             return null;
         }
+    }
+
+    public static JsonObject convertToJsonObject(String input) {
+        Matcher matcher = PATTERN.matcher(input);
+
+        JsonObject json = new JsonObject();
+
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String value = matcher.group(2);
+
+            if (value.charAt(0) == '{' && value.charAt(value.length() - 1) != '}') {
+                value += "}";
+            }
+
+            value = value.replaceAll("'", "")
+                    .replaceAll("\\\\\"", "");
+
+            try {
+                JsonObject jsonObject = JsonParser.parseString(value).getAsJsonObject();
+
+                jsonObject.entrySet().forEach(entry -> {
+                    if (entry.getValue().isJsonPrimitive() && entry.getValue().getAsString().length() > 0) {
+                        String s1 = entry.getValue().getAsString();
+                        char c = s1.charAt(s1.length() - 1);
+
+                        if (c == 'l' || c == 'L') {
+                            try {
+                                jsonObject.addProperty(entry.getKey(), Long.parseLong(s1.substring(0, s1.length() - 1)));
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+
+                        if (c == 'd' || c == 'D') {
+                            try {
+                                jsonObject.addProperty(entry.getKey(), Double.parseDouble(s1.substring(0, s1.length() - 1)));
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+
+                        if (c == 'f' || c == 'F') {
+                            try {
+                                jsonObject.addProperty(entry.getKey(), Float.parseFloat(s1.substring(0, s1.length() - 1)));
+                            } catch (NumberFormatException ignored) {
+                            }
+                        }
+                    }
+                });
+
+                json.add(key, jsonObject);
+            } catch (Exception e) {
+                try {
+                    json.add(key, JsonParser.parseString(value).getAsJsonArray());
+                } catch (Exception e2) {
+                    json.addProperty(key, value);
+                }
+            }
+        }
+
+        return json;
     }
 
 }
