@@ -27,9 +27,9 @@ public class TimeUtil {
         String[] parts = timerString.split(" ");
         if (parts.length > 2) {
             return Integer.parseInt(parts[2]);
+        } else {
+            return Integer.parseInt(parts[0]);
         }
-
-        return 0;
     }
 
     /**
@@ -44,7 +44,11 @@ public class TimeUtil {
 
         String[] parts = timerString.split(" ");
 
-        return Integer.parseInt(parts[0]);
+        if (parts.length > 2) {
+            return Integer.parseInt(parts[0]);
+        }
+
+        return 0;
     }
 
     /**
