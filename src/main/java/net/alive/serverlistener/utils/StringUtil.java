@@ -83,13 +83,12 @@ public class StringUtil {
         return null;
     }
 
-    public static String getFirstSuffixStartingWith(List<String> strings, String[] prefixes) {
-        for (String prefix : prefixes) {
-            for (String s : strings) {
-                if (s.startsWith(prefix)) {
-                    return s.substring(prefix.length());
-                }
-            }
+    public static String getFirstSuffixStartingWith(List<String> strings, String[] prefixes){
+        String result;
+        for(String prefix : prefixes){
+            result = getFirstSuffixStartingWith(strings, prefix);
+            if(result != null) return result;
+
         }
         return null;
     }
@@ -175,6 +174,28 @@ public class StringUtil {
         }
 
         return json;
+    }
+
+    public static String[] addValueToArray(String[] originalArray, String newValue) {
+        // Neues Array mit erhöhter Größe erstellen
+        String[] newArray = new String[originalArray.length + 1];
+
+        // Vorhandene Werte in das neue Array kopieren
+        System.arraycopy(originalArray, 0, newArray, 0, originalArray.length);
+
+        // Neuen Wert am Ende des Arrays hinzufügen
+        newArray[newArray.length - 1] = newValue;
+
+        return newArray;
+    }
+
+    public static boolean containsString(String string, String[] searches){
+        for(String search : searches){
+            if(string.contains(search))
+                return true;
+        }
+
+        return false;
     }
 
 }

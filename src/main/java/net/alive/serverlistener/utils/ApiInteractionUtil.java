@@ -6,15 +6,19 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.Formatting;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
+import java.net.InetAddress;
 import java.net.URL;
 import java.util.List;
 
 public class ApiInteractionUtil {
 
-    public static void sendData(List<String> data){
+    public static final String API_URL = "http://localhost:8080/api";
+
+    public static void sendData(List<String> data, String insertUrl){
         try {
 
             data.set(0, "{\"sender\": \"" + MinecraftClient.getInstance().player.getUuid() + "\",\"items\": [" + data.get(0));
@@ -23,7 +27,7 @@ public class ApiInteractionUtil {
             Gson gson = new Gson();
             String json = gson.toJson(data);
 
-            URL url = new URL("http://localhost:8080/api/datahandler/auctionhouse");
+            URL url = new URL(insertUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 
             conn.setDoOutput(true);
@@ -47,6 +51,42 @@ public class ApiInteractionUtil {
         }
 
     }
+
+    public static String sendGetRequest(String urlString) throws IOException {
+        URL url = new URL(urlString);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod("GET");
+
+        int responseCode = connection.getResponseCode();
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            StringBuilder response = new StringBuilder();
+            String line;
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+            reader.close();
+            return response.toString();
+        } else {
+            throw new IOException("GET request failed with response code: " + responseCode);
+        }
+    }
+
+    public static boolean checkWebServerConnection(String url) {
+        try {
+            URL serverUrl = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) serverUrl.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(500); // Timeout nach 5000 Millisekunden
+
+            int responseCode = connection.getResponseCode();
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+
 
     public static void testData(MinecraftClient client, List<String> data, ItemStack item){
         if(client.player == null) return;

@@ -8,7 +8,6 @@ package net.alive.serverlistener.utils;
 
         private final String text;
         private final String translationKey;
-
         private final String currency;
 
         Modes(final String text, final String translationKey, final String currency) {

@@ -1,9 +1,7 @@
 package net.alive.serverlistener;
 
-import com.mojang.authlib.minecraft.MinecraftSessionService;
 import net.alive.serverlistener.listener.AuctionInventoryListener;
 import net.alive.serverlistener.listener.InventoryListener;
-import net.alive.serverlistener.listener.TabListener;
 import net.alive.serverlistener.utils.MinecraftServerUtil;
 import net.alive.serverlistener.utils.StringUtil;
 import net.fabricmc.api.ClientModInitializer;
@@ -24,54 +22,33 @@ public class ServerListenerClient implements ClientModInitializer {
     public static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
     private static MinecraftClient client;
 
-    public static final MutableText MOD_TEXT = StringUtil.getColorizedString(Arrays.asList(
-            StringUtil.TextComponent("[", Formatting.DARK_GRAY),
-            StringUtil.TextComponent("PreisCXN", Formatting.GOLD),
-            StringUtil.TextComponent("]", Formatting.DARK_GRAY))
-    );
+    public static boolean CONNECTION_ESTABLISHED = false;
 
-    private boolean inAuctionHouse = false;
-
-    private boolean onetime = true;
-
-    private Slot firstSlot = null;
+    public static MutableText MOD_TEXT = null;
 
     @Override
     public void onInitializeClient() {
 
         client = MinecraftClient.getInstance();
 
-        MinecraftServerUtil.init();
+        CxnListener server = new CxnListener();
 
-        InventoryListener auctionListener = new AuctionInventoryListener(new String[]{"Auktionshaus"}, 6*9);
+        MOD_TEXT = StringUtil.getColorizedString(Arrays.asList(
+                StringUtil.TextComponent("[", Formatting.DARK_GRAY),
+                StringUtil.TextComponent(CxnListener.MOD_NAME, Formatting.GOLD),
+                StringUtil.TextComponent("]", Formatting.DARK_GRAY))
+        );
+
+
+        //MinecraftServerUtil.init(new String[] {});
+
+
+
 
 
         /**
          * Daten Auslesen aus Auktionshaus, /handel, Spielershops
          */
-            /*
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player == null) return;
-            if (!(client.currentScreen instanceof HandledScreen && isInventoryTitle(client, "Auktionshaus"))) return;
-
-            ScreenHandler handler = client.player.currentScreenHandler;
-
-            if(handler.getSlot(53).getStack().toString().equals("1 air")){
-                client.player.sendMessage(StringUtil.getColorizedString("9-null-stack", Formatting.GREEN));
-            }
-        });
-        ClientTickEvents.START_CLIENT_TICK.register(client -> {
-            if (client.player == null) return;
-            if (!(client.currentScreen instanceof GenericContainerScreen && isInventoryTitle(client, "Auktionshaus"))) return;
-
-            ScreenHandler handler = client.player.currentScreenHandler;
-
-            if(handler.getSlot(53).getStack().toString().equals("1 air")){
-                client.player.sendMessage(StringUtil.getColorizedString("9-null-stack", Formatting.RED));
-            }
-        });
-
-             */
     }
 
     private void onAuctionHouseEnter(ScreenHandler handler){

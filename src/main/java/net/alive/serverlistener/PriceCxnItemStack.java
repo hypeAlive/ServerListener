@@ -22,10 +22,10 @@ import java.util.UUID;
 
 public class PriceCxnItemStack {
 
-    private static final String TIMESTAMP_SEARCH = "Ende: ";
-    private static final String SELLER_SEARCH = "Verkäufer: ";
-    private static final String BID_SEARCH = "Gebotsbetrag: ";
-    private static final String BUY_SEARCH = "Sofortkauf: ";
+    private static String[] TIMESTAMP_SEARCH = { "Ende: " };
+    private static String[] SELLER_SEARCH = { "Verkäufer: " };
+    private static String[] BID_SEARCH = { "Gebotsbetrag: " };
+    private static String[] BUY_SEARCH = { "Sofortkauf: "};
 
     private long timeStamp = -1;
     private String sellerName = null;
@@ -46,27 +46,30 @@ public class PriceCxnItemStack {
 
     public PriceCxnItemStack(ItemStack stack){
         if(stack == null) return;
+
+        refreshSearchData();
+
         this.stack = stack;
-
         this.toolTips = StringUtil.getToolTips(stack);
-
         this.amount = stack.getCount();
 
         this.sellerName = StringUtil.getFirstSuffixStartingWith(toolTips, SELLER_SEARCH);
         this.sellerUuid = this.sellerName == null ? null : StringUtil.getPlayerUUID(this.sellerName);
 
         this.bidPrice = StringUtil.getFirstSuffixStartingWith(toolTips, BID_SEARCH);
+        if(this.bidPrice != null)
+            this.bidPrice = this.bidPrice.substring(0, this.bidPrice.length() - 1);
 
         this.buyPrice = StringUtil.getFirstSuffixStartingWith(toolTips, BUY_SEARCH);
+        if(buyPrice != null)
+            this.buyPrice = this.buyPrice.substring(0, this.buyPrice.length() - 1);
 
         String timestamp = StringUtil.getFirstSuffixStartingWith(toolTips, TIMESTAMP_SEARCH);
         this.timeStamp = timestamp == null ? -1 : TimeUtil.getStartTimeStamp(timestamp);
-        System.out.println("-.-" + timeStamp);
+
 
         this.itemName = stack.getItem().getTranslationKey();
-
         this.priceKey = createID();
-
         this.comment = Objects.requireNonNull(StringUtil.getNbtTags(stack)).toString();
     }
 
@@ -140,7 +143,7 @@ public class PriceCxnItemStack {
      */
 
     private String createID(){
-        String id = this.itemName + "::" + this.buyPrice + "::" + TimeUtil.roundToTenMinutes(this.timeStamp) + "::" + this.sellerUuid;
+        String id = this.itemName + "::" + this.buyPrice + "::" + this.timeStamp + "::" + this.sellerUuid;
         System.out.println(id);
         return id;
     }
@@ -166,7 +169,10 @@ public class PriceCxnItemStack {
 
     @Override
     public String toString(){
-        if(MinecraftServerUtil.MODE == Modes.NOTHING || MinecraftServerUtil.MODE == Modes.LOBBY)
+        if(MinecraftServerUtil.MODE == Modes.NOTHING || MinecraftServerUtil.MODE == null)
+            return null;
+
+        if(timeStamp == -1)
             return null;
 
 
@@ -187,6 +193,44 @@ public class PriceCxnItemStack {
         System.out.println(sb);
 
         return sb;
+    }
+
+    public boolean equals(PriceCxnItemStack stack){
+        if(this.itemName == null || stack.getItemName() == null){
+            if(!(this.itemName == null && stack.getItemName() == null)) return false;
+        } else if(!this.itemName.equals(stack.getItemName())) return false;
+
+        if(this.buyPrice == null || stack.getBuyPrice() == null){
+            if(!(this.buyPrice == null && stack.getBuyPrice() == null)) return false;
+        } else if(!this.buyPrice.equals(stack.getBuyPrice())) return false;
+
+        if(this.sellerUuid == null || stack.getSellerUuid() == null){
+            if(!(this.sellerUuid == null && stack.getSellerUuid() == null)) return false;
+        } else if(!this.sellerUuid.toString().equals(stack.getSellerUuid().toString())) return false;
+
+        return TimeUtil.timestampsEqual(this.timeStamp, stack.getTimeStamp(), 3);
+    }
+
+    private void refreshSearchData(){
+        if(!CxnListener.CONNECTED_TO_SERVER) return;
+
+        String[] timestamp = CxnListener.getTranslationsAsArray("cxnprice.translation.auctions.search.timestamp");
+        String[] seller = CxnListener.getTranslationsAsArray("cxnprice.translation.auctions.search.seller");
+        String[] buy = CxnListener.getTranslationsAsArray("cxnprice.translation.auctions.search.buy");
+        String[] bid = CxnListener.getTranslationsAsArray("cxnprice.translation.auctions.search.bid");
+
+        if(timestamp != null)
+            TIMESTAMP_SEARCH = timestamp;
+
+        if(seller != null)
+            SELLER_SEARCH = seller;
+
+        if(buy != null)
+            BUY_SEARCH = buy;
+
+        if(bid != null)
+            BID_SEARCH = bid;
+
     }
 
     public long getTimeStamp() {

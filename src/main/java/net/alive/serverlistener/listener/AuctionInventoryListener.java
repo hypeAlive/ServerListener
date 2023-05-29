@@ -1,7 +1,5 @@
 package net.alive.serverlistener.listener;
 
-import com.google.gson.Gson;
-import com.mojang.authlib.minecraft.client.ObjectMapper;
 import net.alive.serverlistener.PriceCxnItemStack;
 import net.alive.serverlistener.ServerListenerClient;
 import net.alive.serverlistener.utils.ApiInteractionUtil;
@@ -22,7 +20,7 @@ public class AuctionInventoryListener extends InventoryListener{
     private List<PriceCxnItemStack> prices = new ArrayList<>();
 
     public AuctionInventoryListener(String[] inventoryTitles, int inventorySize) {
-        super(inventoryTitles, inventorySize);
+        super(inventoryTitles == null ? new String[] { "Auktionshaus" } : inventoryTitles, inventorySize);
     }
 
     @Override
@@ -37,7 +35,7 @@ public class AuctionInventoryListener extends InventoryListener{
 
     @Override
     public void onInventoryClose(MinecraftClient client, ScreenHandler handler) {
-        MinecraftServerUtil.refreshMode();
+        //MinecraftServerUtil.refreshTabSearch();
         client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geschlossen!", Formatting.GRAY));
 
         processPrices(client);
@@ -67,7 +65,7 @@ public class AuctionInventoryListener extends InventoryListener{
 
             PriceCxnItemStack item = new PriceCxnItemStack(slot);
             for(PriceCxnItemStack items : prices){
-                if(items.getPriceKey().equals(item.getPriceKey())){
+                if(items.equals(item)){
                     if(!Objects.equals(items.getBidPrice(), item.getBidPrice()))
                         items.setBidPrice(item.getBidPrice());
                     //MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString("- " + prices.size(), Formatting.GREEN));
@@ -96,10 +94,11 @@ public class AuctionInventoryListener extends InventoryListener{
             if(nbtTags == null) continue;
             if(item.toString() == null) continue;
 
-            data.add(item.toString());
+            if(item.toString() != null)
+                data.add(item.toString());
         }
 
-        ApiInteractionUtil.sendData(data);
+        ApiInteractionUtil.sendData(data, ApiInteractionUtil.API_URL + "/datahandler/auctionhouse");
     }
 
 }
