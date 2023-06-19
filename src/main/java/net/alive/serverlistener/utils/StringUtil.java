@@ -2,9 +2,13 @@ package net.alive.serverlistener.utils;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.yggdrasil.YggdrasilAuthenticationService;
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
+import net.minecraft.client.network.PlayerListEntry;
+import net.minecraft.client.util.Session;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.text.LiteralTextContent;
@@ -12,13 +16,17 @@ import net.minecraft.text.MutableText;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
+import net.minecraft.util.UserCache;
 import net.minecraft.util.Uuids;
 
+import java.text.NumberFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class StringUtil {
+
+    public static final int INT_NOT_FOUND = -9999999;
 
     private static final String REGEX = "(\\w+):\\s?(.+?)(?=,\\s?\\w+:|$)";
     private static final Pattern PATTERN = Pattern.compile(REGEX);
@@ -48,6 +56,8 @@ public class StringUtil {
     }
 
     public static List<String> getNbtTags(ItemStack stack){
+        if(stack == null) return null;
+
         List<String> result = new ArrayList<>();
 
         NbtCompound tag = stack.getNbt();
@@ -62,7 +72,40 @@ public class StringUtil {
         return result;
     }
 
+    public static String extractStringFromWildcard(String input, String wildcardPattern) {
+        String[] patternParts = wildcardPattern.split("\\*");
+
+        if (patternParts.length != 2) {
+            System.out.println("Invalid wildcard pattern");
+            return null;
+        }
+
+        int startIndex = input.indexOf(patternParts[0]);
+        if (startIndex == -1) {
+            System.out.println("Start pattern not found");
+            return null;
+        }
+
+        int endIndex = input.indexOf(patternParts[1], startIndex + patternParts[0].length());
+        if (endIndex == -1) {
+            System.out.println("End pattern not found");
+            return null;
+        }
+
+        return input.substring(startIndex + patternParts[0].length(), endIndex);
+    }
+
+    public static int safeParseInt(String str) {
+        try {
+            return Integer.parseInt(str);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid integer format: " + str);
+            return StringUtil.INT_NOT_FOUND;
+        }
+    }
+
     public static List<String> getToolTips(ItemStack stack){
+        if(stack == null) return null;
         List<String> result = new ArrayList<>();
 
         List<Text> tooltip = stack.getTooltip(MinecraftClient.getInstance().player, MinecraftClient.getInstance().options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC);
@@ -72,6 +115,27 @@ public class StringUtil {
         }
 
         return result;
+    }
+
+    public static UUID getPlayerUUIDV2(String playerName) {
+        MinecraftClient client = MinecraftClient.getInstance();
+        if (client == null) {
+            return null; // Minecraft client not available
+        }
+
+        Session session = client.getSession();
+        if (session == null) {
+            return null; // No active session
+        }
+
+        GameProfile gameProfile = new GameProfile(UUID.randomUUID(), playerName);
+        client.getSessionService().fillProfileProperties(gameProfile, true);
+
+        if (gameProfile.getId() != null) {
+            return gameProfile.getId();
+        }
+
+        return null; // Player UUID not found
     }
 
     public static String getFirstSuffixStartingWith(List<String> strings, String prefix) {
@@ -97,24 +161,7 @@ public class StringUtil {
         return Uuids.getOfflinePlayerUuid(playerName);
     }
 
-    public static String extractStringFromWildcard(String input, String wildcardPattern) {
-        String[] patternParts = wildcardPattern.split("\\*");
-        if (patternParts.length == 2) {
-            int startIndex = input.indexOf(patternParts[0]);
-            if (startIndex != -1) {
-                int endIndex = input.indexOf(patternParts[1], startIndex + patternParts[0].length());
-                if (endIndex != -1) {
-                    return input.substring(startIndex + patternParts[0].length(), endIndex);
-                } else {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
+
 
     public static JsonObject convertToJsonObject(String input) {
         Matcher matcher = PATTERN.matcher(input);
@@ -196,6 +243,55 @@ public class StringUtil {
         }
 
         return false;
+    }
+
+    public static String mutantVocable(String string){
+        if(string == null)
+            return null;
+
+        String ä = "Ã¤";
+        String Ä = "Ã„";
+        String ü = "Ã¼";
+        String Ü = "Ãœ";
+        String ö = "Ã¶";
+        String Ö = "Ã–";
+        String ß = "ÃŸ";
+
+
+        return string
+                .replace(ä, "ä")
+                .replace(Ä, "Ä")
+                .replace(ü, "ü")
+                .replace(Ü, "Ü")
+                .replace(ö, "ö")
+                .replace(Ö, "Ö")
+                .replace(ß, "ß");
+    }
+
+    public static List<String> mutantVocable(List<String> strings){
+
+        List<String> result = new ArrayList<>();
+
+        for(String string : strings){
+            String help = mutantVocable(string);
+            result.add(help);
+        }
+
+        return result;
+    }
+
+    public static String convertPrice(String input) {
+        double number = Double.parseDouble(input);
+
+        return convertPrice(number);
+    }
+
+    public static String convertPrice(double number) {
+        // Formatierung mit Tausendertrennzeichen und Dezimaltrennzeichen
+        NumberFormat format = NumberFormat.getNumberInstance(Locale.GERMAN);
+        format.setMinimumFractionDigits(2);
+        format.setMaximumFractionDigits(2);
+        return format.format(number);
     }
 
 }

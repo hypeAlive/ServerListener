@@ -22,7 +22,7 @@ public class ServerListenerClient implements ClientModInitializer {
     public static final ScheduledExecutorService EXECUTOR_SERVICE = Executors.newSingleThreadScheduledExecutor();
     private static MinecraftClient client;
 
-    public static boolean CONNECTION_ESTABLISHED = false;
+    public static boolean DEBUG_MODE = false;
 
     public static MutableText MOD_TEXT = null;
 
@@ -38,42 +38,5 @@ public class ServerListenerClient implements ClientModInitializer {
                 StringUtil.TextComponent(CxnListener.MOD_NAME, Formatting.GOLD),
                 StringUtil.TextComponent("]", Formatting.DARK_GRAY))
         );
-
-
-        //MinecraftServerUtil.init(new String[] {});
-
-
-
-
-
-        /**
-         * Daten Auslesen aus Auktionshaus, /handel, Spielershops
-         */
-    }
-
-    private void onAuctionHouseEnter(ScreenHandler handler){
-        MinecraftClient.getInstance().player.sendMessage(getText("Auktionshaus betreten", Formatting.DARK_RED));
-
-        for(int i = 10; i < 31; i++){
-            Slot slot = handler.getSlot(i);
-
-            if(!slot.hasStack()) {
-                continue;
-            }
-            ItemStack itemStack = slot.getStack();
-            List<Text> tooltip = itemStack.getTooltip(MinecraftClient.getInstance().player, MinecraftClient.getInstance().options.advancedItemTooltips ? TooltipContext.Default.ADVANCED : TooltipContext.Default.BASIC);
-
-            for (Text line : tooltip){
-                //MinecraftClient.getInstance().player.sendMessage(line);
-            }
-        }
-    }
-
-    private void onAuctionHouseLeave(){
-        MinecraftClient.getInstance().player.sendMessage(getText("Auktionshaus verlassen", Formatting.DARK_RED));
-    }
-
-    private MutableText getText(String sting, Formatting formatting){
-        return MutableText.of(new LiteralTextContent(sting)).setStyle(Style.EMPTY.withColor(formatting));
     }
 }

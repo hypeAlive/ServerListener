@@ -1,8 +1,11 @@
 package net.alive.serverlistener.listener;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.alive.serverlistener.CxnListener;
 import net.alive.serverlistener.PriceCxnItemStack;
 import net.alive.serverlistener.ServerListenerClient;
-import net.alive.serverlistener.utils.ApiInteractionUtil;
+import net.alive.serverlistener.utils.Http;
 import net.alive.serverlistener.utils.MinecraftServerUtil;
 import net.alive.serverlistener.utils.StringUtil;
 import net.minecraft.client.MinecraftClient;
@@ -11,32 +14,35 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.Formatting;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-public class AuctionInventoryListener extends InventoryListener{
+public class AuctionInventoryListener extends InventoryListener {
 
     private List<PriceCxnItemStack> prices = new ArrayList<>();
 
     public AuctionInventoryListener(String[] inventoryTitles, int inventorySize) {
-        super(inventoryTitles == null ? new String[] { "Auktionshaus" } : inventoryTitles, inventorySize);
+        super(inventoryTitles == null ? new String[] { "Auktionshaus" } : inventoryTitles, inventorySize <= 0 ? 6*9 : inventorySize);
     }
 
     @Override
     public void onInventoryOpen(MinecraftClient client, ScreenHandler handler) {
-        client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geöffnet!", Formatting.GRAY));
+        if(ServerListenerClient.DEBUG_MODE)
+            client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geöffnet!", Formatting.GRAY));
 
         prices = new ArrayList<>();
 
-        updatePrices(handler);
+        updateItemsTimes(handler, 7);
 
     }
 
     @Override
     public void onInventoryClose(MinecraftClient client, ScreenHandler handler) {
         //MinecraftServerUtil.refreshTabSearch();
-        client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geschlossen!", Formatting.GRAY));
+        if(ServerListenerClient.DEBUG_MODE)
+            client.player.sendMessage(StringUtil.getColorizedString("Inventar " + this.inventoryTitles[0] + " geschlossen!", Formatting.GRAY));
 
         processPrices(client);
 
@@ -44,12 +50,7 @@ public class AuctionInventoryListener extends InventoryListener{
 
     @Override
     public void onInventoryUpdate(MinecraftClient client, ScreenHandler handler) {
-        for(int i = 0; i < 7; i++) {
-            ServerListenerClient.EXECUTOR_SERVICE.schedule(() -> {
-                if(!this.isOpen) return;
-                updatePrices(handler);
-            }, 300 + 100 * i, TimeUnit.MILLISECONDS);
-        }
+        updateItemsTimes(handler, 7);
     }
 
     private void updatePrices(ScreenHandler handler){
@@ -78,7 +79,17 @@ public class AuctionInventoryListener extends InventoryListener{
 
             prices.add(new PriceCxnItemStack(slot));
         }
-        MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString("Added " + (prices.size() - size) + " Items to List (" + prices.size()  +")", Formatting.GRAY));
+        if(ServerListenerClient.DEBUG_MODE)
+            MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString("Added " + (prices.size() - size) + " Items to List (" + prices.size()  +")", Formatting.GRAY));
+    }
+
+    private void updateItemsTimes(ScreenHandler handler, int times){
+        for(int i = 0; i < times; i++) {
+            ServerListenerClient.EXECUTOR_SERVICE.schedule(() -> {
+                if(!this.isOpen) return;
+                updatePrices(handler);
+            }, 300 + 100L * i, TimeUnit.MILLISECONDS);
+        }
     }
 
     private void processPrices(MinecraftClient client){
@@ -86,7 +97,8 @@ public class AuctionInventoryListener extends InventoryListener{
 
         List<String> data = new ArrayList<>();
 
-        MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString(String.valueOf("Send " + this.prices.size() + " Items to Server"), Formatting.GREEN));
+        if(ServerListenerClient.DEBUG_MODE)
+            MinecraftClient.getInstance().player.sendMessage(StringUtil.getColorizedString(String.valueOf("Send " + this.prices.size() + " Items to Server"), Formatting.GREEN));
 
         for(PriceCxnItemStack item : prices){
             List<String> nbtTags = StringUtil.getNbtTags(item.getStack());
@@ -98,7 +110,19 @@ public class AuctionInventoryListener extends InventoryListener{
                 data.add(item.toString());
         }
 
-        ApiInteractionUtil.sendData(data, ApiInteractionUtil.API_URL + "/datahandler/auctionhouse");
+        if(!CxnListener.ACTIVATE) return;
+        if(!MinecraftServerUtil.onServer) return;
+        if (CxnListener.MAINTENANCE)
+            if(CxnListener.getTrustLevel(client.player.getUuid()) != 9999999)
+                return;
+
+        JsonObject object = new JsonObject();
+        object.addProperty("sender", MinecraftClient.getInstance().player == null ? null : MinecraftClient.getInstance().player.getUuidAsString());
+        object.addProperty("senderName", MinecraftClient.getInstance().player == null ? null : MinecraftClient.getInstance().player.getName().getString());
+
+        object.add("items", new JsonParser().parse(data.toString()));
+
+        Http.POST("/datahandler/auctionhouse", object);
     }
 
 }
