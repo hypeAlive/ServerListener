@@ -5,6 +5,7 @@ import net.alive.serverlistener.listener.InventoryListener;
 import net.alive.serverlistener.utils.MinecraftServerUtil;
 import net.alive.serverlistener.utils.StringUtil;
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.item.TooltipContext;
 import net.minecraft.item.ItemStack;
@@ -13,6 +14,7 @@ import net.minecraft.screen.slot.Slot;
 import net.minecraft.text.*;
 import net.minecraft.util.Formatting;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
